@@ -2,20 +2,55 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Simple Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wiggly Canvas</title>
 
     <link rel="stylesheet" href="styles.css" />
+    <script src="palettes.js" defer></script>
     <script src="canvas.js" defer></script>
   </head>
   <body>
     <div id="main-wrapper">
-      <h1 id="main-title">Simple Canvas 0.1</h1>
-      <canvas id="main-canvas" width="800" height="600"></canvas>
-      <button id="wiggle-btn">wiggle</button>
-      <button id="pen-btn">pen</button>
-      <button id="eraser-btn">eraser</button>
-      <button id="undo-btn">Undo</button>
-      <button id="nuke-btn">Nuke</button>
+      <div id="canvas-section">
+        <canvas id="main-canvas" width="800" height="600"></canvas>
+      </div>
+
+      <div id="tools-section">
+        <div id="buttons-wrapper">
+          <div class="button-group">
+            <button
+              id="wiggle-btn"
+              class="tool-btn active"
+              title="Toggle wiggly mode"
+            >
+              Wiggle
+            </button>
+            <button id="pen-btn" class="tool-btn active" title="Pen mode">
+              Pen
+            </button>
+            <button id="eraser-btn" class="tool-btn" title="Eraser mode">
+              Eraser
+            </button>
+          </div>
+
+          <div class="button-group">
+            <button id="undo-btn" class="tool-btn" title="Undo last stroke">
+              Undo
+            </button>
+            <button
+              id="nuke-btn"
+              class="tool-btn danger"
+              title="Clear everything"
+            >
+              Nuke
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="bottom-section">
+        <!-- Export Options -->
+      </div>
     </div>
   </body>
 </html>

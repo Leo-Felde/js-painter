@@ -1,19 +1,280 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html {
-  height: 100dvh;
-  width: 100dvw;
-  background-color: #e5e5f7;
-  background-image: radial-gradient(#242424 0.8px, #ffffff 0.8px);
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  background-image: radial-gradient(#242424 0.8px, #e8e8e8 0.8px);
   background-size: 5px 5px;
+  font-family: "Courier New", monospace, system-ui;
 }
 
 #main-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  gap: 20px;
   padding: 24px;
+  background: transparent;
+}
+
+#canvas-section {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+#tools-section {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+}
+
+#bottom-section {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  padding-top: 10px;
+  min-height: 80px;
 }
 
 #main-canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
   width: 800px;
   height: 600px;
-  border: 2px solid black;
+  border: 3px solid #1a1a1a;
+  box-shadow: 8px 8px 0px 0px #1a1a1a;
+  cursor: crosshair;
+  background-color: white;
+}
+
+#buttons-wrapper {
+  display: block;
+  width: auto;
+}
+
+.button-group {
+  display: block;
+  margin-bottom: 15px;
+}
+
+.button-group:last-child {
+  margin-bottom: 0;
+}
+
+.button-group::before {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.tool-btn {
+  display: block;
+  width: 120px;
   background: white;
-  box-shadow: 5px 5px 0px 1px #000000;
+  border: 2px solid #1a1a1a;
+  padding: 10px;
+  margin: 0 0 10px 0;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px 0px #1a1a1a;
+  transition: all 0.05s linear;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.tool-btn:last-child {
+  margin-bottom: 0;
+}
+
+.tool-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px #1a1a1a;
+  background: #f0f0f0;
+}
+
+.tool-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #1a1a1a;
+}
+
+.tool-btn.active {
+  background: #1a1a1a;
+  color: white;
+  box-shadow: 2px 2px 0px 0px #1a1a1a;
+  transform: translate(1px, 1px);
+}
+
+.tool-btn.active:hover {
+  background: #333;
+  transform: translate(0px, 0px);
+}
+
+.tool-btn.danger {
+  border-color: #cc0000;
+  color: #cc0000;
+  box-shadow: 3px 3px 0px 0px #cc0000;
+}
+
+.tool-btn.danger:hover {
+  background: #cc0000;
+  color: white;
+  border-color: #cc0000;
+  box-shadow: 4px 4px 0px 0px #cc0000;
+}
+
+.tool-btn.danger:active {
+  background: #990000;
+  color: white;
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #990000;
+}
+
+#wiggle-btn.active {
+  background: #4a90e2;
+  border-color: #4a90e2;
+  color: white;
+}
+
+#pen-btn.active {
+  background: #2c3e50;
+  border-color: #2c3e50;
+}
+
+#eraser-btn.active {
+  background: #e67e22;
+  border-color: #e67e22;
+}
+
+#bottom-section {
+  text-align: center;
+}
+
+#bottom-section:empty::before {
+  content: "🎨 PALETTE & EXPORT CONTROLS (coming soon)";
+  display: block;
+  color: #999;
+  font-size: 12px;
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Responsive behavior */
+@media (max-width: 1100px) {
+  #main-canvas {
+    width: 640px;
+    height: 480px;
+  }
+
+  .tool-btn {
+    width: 100px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .button-group::before {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 860px) {
+  #main-wrapper {
+    position: static;
+    transform: none;
+    padding: 16px;
+    justify-content: center;
+  }
+
+  #main-canvas {
+    width: 560px;
+    height: 420px;
+  }
+
+  .tool-btn {
+    width: 90px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 700px) {
+  #main-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #tools-section {
+    margin-top: 20px;
+  }
+
+  #buttons-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .tool-btn {
+    display: inline-block;
+    width: auto;
+    margin-bottom: 0;
+  }
+
+  .button-group::before {
+    display: none;
+  }
+
+  #bottom-section {
+    margin-top: 20px;
+    width: 100%;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .tool-btn,
+  #tools-section,
+  #bottom-section:empty::before {
+    display: none;
+  }
+
+  #main-canvas {
+    box-shadow: none;
+    border: 1px solid black;
+  }
+
+  #main-wrapper {
+    position: static;
+    transform: none;
+    display: block;
+  }
 }
