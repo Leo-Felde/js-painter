@@ -1,7 +1,6 @@
 let isWiggly = true;
 let strokes = [];
 let currentPoints = [];
-let isDrawing = false;
 let animationId = null;
 
 // limits max undos, -1 for unlimited
@@ -13,21 +12,47 @@ const ctx = canvas.getContext("2d");
 const WIGGLENESS = 1.4; // wiggleniliness coeficient more equals more wiggly!
 ctx.lineWidth = 5;
 ctx.lineCap = "square";
-ctx.lineJoin = "round";
+ctx.lineJoin = "miter";
+ctx.miterLimit = 2;
+
+let backgroundColor = "#ffffff";
+let strokeColor = "#000000";
+let isDrawing = false;
+let isErasing = false;
+let eraserWidth = 15;
 
 const wiggleButton = document.getElementById("wiggle-btn");
+const penButton = document.getElementById("pen-btn");
+const eraserButton = document.getElementById("eraser-btn");
 const undoButton = document.getElementById("undo-btn");
+const nukeButton = document.getElementById("nuke-btn");
 
 // toggles wigglyniliness
 wiggleButton.addEventListener("click", (e) => {
   isWiggly = !isWiggly;
 });
 
+// toggles eraser
+penButton.addEventListener("click", (e) => {
+  isErasing = false;
+  canvas.style.cursor = "default";
+});
+eraserButton.addEventListener("click", (e) => {
+  isErasing = true;
+  canvas.style.cursor = "cell";
+});
+
 // Undo last action
 undoButton.addEventListener("click", (e) => {
   if (currentUndos > 0) {
     strokes.pop();
+    currentUndos--;
   }
+});
+
+// deletes whole drawing
+nukeButton.addEventListener("click", (e) => {
+  strokes.length = 0;
 });
 
 // mouse drawing events
@@ -46,7 +71,13 @@ canvas.addEventListener("mouseup", () => {
   isDrawing = false;
 
   if (currentPoints.length >= 1) {
-    strokes.push([...currentPoints]);
+    // Store the stroke WITH its color/eraser state
+    strokes.push({
+      points: [...currentPoints],
+      isEraser: isErasing,
+      color: isErasing ? backgroundColor : strokeColor,
+    });
+
     if (currentUndos < (maxUndos > 0 ? maxUndos : currentUndos + 1)) {
       currentUndos++;
     }
@@ -68,22 +99,37 @@ function drawAllStrokes() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   strokes.forEach((stroke) => {
-    drawStroke(stroke);
+    drawStroke(stroke.points, stroke.isEraser, stroke.color);
   });
 
   if (currentPoints.length >= 1) {
-    drawStroke(currentPoints);
+    drawStroke(
+      currentPoints,
+      isErasing,
+      isErasing ? backgroundColor : strokeColor,
+    );
   }
 }
 
-function drawStroke(points) {
+function drawStroke(points, isEraserMode, color) {
   if (points.length === 0) return;
 
   ctx.save();
 
+  // Use the stored color/eraser state, not global
+  if (isEraserMode) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = eraserWidth;
+  } else {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 5;
+  }
+
   if (points.length === 1) {
     ctx.beginPath();
-    if (isWiggly) {
+    if (isWiggly && !isEraserMode) {
       const wiggleX = (Math.random() - 0.5) * WIGGLENESS;
       const wiggleY = (Math.random() - 0.5) * WIGGLENESS;
       ctx.arc(
@@ -100,7 +146,7 @@ function drawStroke(points) {
   } else {
     ctx.beginPath();
 
-    if (isWiggly) {
+    if (isWiggly && !isEraserMode) {
       ctx.moveTo(
         points[0].x + (Math.random() - 0.5) * WIGGLENESS,
         points[0].y + (Math.random() - 0.5) * WIGGLENESS,
@@ -133,6 +179,7 @@ document.getElementById("clear-btn").addEventListener("click", () => {
   strokes = [];
   currentPoints = [];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  currentUndos = 0;
 });
 
 startAnimation();
