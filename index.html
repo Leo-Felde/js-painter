@@ -6,6 +6,8 @@
     <title>Wiggly Canvas</title>
 
     <link rel="stylesheet" href="styles.css" />
+    <!--  this is required for gif/animated export  -->
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <script src="palettes.js" defer></script>
     <script src="canvas.js" defer></script>
   </head>
@@ -53,6 +55,11 @@
 
       <div id="bottom-section">
         <!-- Export Options -->
+        <div class="button-group">
+          <button id="export-png-btn">STATIC</button>
+          <button id="export-gif-btn">ANIMATED</button>
+          <button id="export-png-transparent-btn">TRANSPARENT</button>
+        </div>
       </div>
     </div>
   </body>

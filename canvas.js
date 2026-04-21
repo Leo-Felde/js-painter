@@ -2,14 +2,14 @@
 // CANVAS SETUP
 // ============================================================================
 const PIXEL_SCALE = 4;
-const DISPLAY_WIDTH = 800;
-const DISPLAY_HEIGHT = 600;
+const DISPLAY_WIDTH = 560;
+const DISPLAY_HEIGHT = 420;
 
 const canvas = document.getElementById("main-canvas");
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
-ctx.lineCap = "square";
-ctx.lineJoin = "miter";
+ctx.lineCap = "round";
+ctx.lineJoin = "round";
 ctx.miterLimit = 2;
 
 const offscreenCanvas = document.createElement("canvas");
@@ -17,6 +17,7 @@ const offCtx = offscreenCanvas.getContext("2d");
 offscreenCanvas.width = canvas.width;
 offscreenCanvas.height = canvas.height;
 offCtx.imageSmoothingEnabled = false;
+offCtx.miterLimit = 2;
 
 // ============================================================================
 // STATE VARIABLES
@@ -120,6 +121,46 @@ const setActiveColorButton = (activeBtn, color) => {
 };
 
 // ============================================================================
+// EXPORT FUNCTIONALITY
+// ============================================================================
+
+// Export as static PNG
+function exportAsPNG(transparent = false) {
+  const exportCanvas = document.createElement("canvas");
+  exportCanvas.width = canvas.width;
+  exportCanvas.height = canvas.height;
+  const exportCtx = exportCanvas.getContext("2d");
+
+  if (!transparent) {
+    exportCtx.fillStyle = canvas.style.backgroundColor;
+    exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+  }
+
+  exportCtx.drawImage(canvas, 0, 0);
+
+  const link = document.createElement("a");
+  link.href = exportCanvas.toDataURL("image/png");
+  link.download = `painting-${Date.now()}.png`;
+  link.click();
+}
+
+// Export as animated GIF (using gif.js library)
+async function exportAsGIF() {
+  // COMO FAZER???????
+}
+
+// Add export buttons to your HTML and wire them up:
+document
+  .getElementById("export-png-btn")
+  .addEventListener("click", () => exportAsPNG(false));
+document
+  .getElementById("export-png-transparent-btn")
+  .addEventListener("click", () => exportAsPNG(true));
+document
+  .getElementById("export-gif-btn")
+  .addEventListener("click", () => exportAsGIF(false));
+
+// ============================================================================
 // COLOR BUTTON EVENT LISTENERS
 // ============================================================================
 primaryBtn.addEventListener("click", (e) => {
@@ -181,14 +222,16 @@ nukeButton.addEventListener("click", (e) => {
 // CANVAS DRAWING EVENT LISTENERS
 // ============================================================================
 canvas.addEventListener("mousedown", (e) => {
+  const pos = getScaledMousePos(e);
   isDrawing = true;
-  currentPoints = [{ x: e.offsetX, y: e.offsetY }];
+  currentPoints = [{ x: pos.x, y: pos.y }];
   startAnimation();
 });
 
 canvas.addEventListener("mousemove", (e) => {
   if (!isDrawing) return;
-  currentPoints.push({ x: e.offsetX, y: e.offsetY });
+  const pos = getScaledMousePos(e);
+  currentPoints.push({ x: pos.x, y: pos.y });
 });
 
 canvas.addEventListener("mouseup", () => {
@@ -249,6 +292,22 @@ function startAnimation() {
 // ============================================================================
 // RENDERING
 // ============================================================================
+
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
+// due to the actual resolution being smaller than the screen, get position relative to canvas size :)
+function getScaledMousePos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY,
+  };
+}
+
 function drawAllStrokes() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   offCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
@@ -308,8 +367,8 @@ function drawStroke(targetCtx, points, mode, color, lineWidth, strokeSeed = 0) {
     targetCtx.globalCompositeOperation = "source-over";
   }
 
-  targetCtx.lineCap = "square";
-  targetCtx.lineJoin = "miter";
+  targetCtx.lineCap = "round";
+  targetCtx.lineJoin = "round";
   targetCtx.lineWidth = lineWidth;
   targetCtx.strokeStyle = color;
   targetCtx.fillStyle = color;
