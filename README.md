@@ -1,11 +1,11 @@
-# Chirp JS-Painter
-name is a work in proggress™
+# Chirp-Paint a Wiggly canvas playground
+name is a work in proggress™.
 
 <div align="center">
     <img width="500" height="430" alt="A cool gif showing the tool" src="https://github.com/user-attachments/assets/fa7a05de-d160-467c-a54a-ffdf48831cd4" />
 </div>
 
-> ### 🚀 [**Try the Live Demo here!**](https://leo-felde.github.io/js-painter/)
+> ### 🚀 [**Try the Live Demo here!**](https://leo-felde.github.io/js-wiggly-canvas/)
 
 A minimalist, high(er?)-resolution creative painting tool built with vanilla JavaScript and HTML5 Canvas. Inspired by the concept of "wiggly" art, this project allows users to readly create art whithout downloading or configuring apps.
 Just pick a color palette and start drawing!
@@ -13,7 +13,7 @@ Just pick a color palette and start drawing!
 ## Key Enhancements
 * **Higher Resolution:** Optimized canvas rendering for sharper lines and cleaner exports.
 * **Tamed Wiggle:** The wiggle intensity is more subtle by default and can be **turned off completely** (why would you?) for static illustrations.
-* **Dual Export:** Support for high-quality **PNG** snapshots and looping **GIF** animations.
+* **Dual Export:** Support for high-quality **PNG** snapshots and **GIF** for all it's wiggly glory.
 
 ## Features
 * **Dynamic Animation:** Real-time rendering of animated strokes.
@@ -28,6 +28,7 @@ Just pick a color palette and start drawing!
 
 ## Installation & Local Setup
 Because this project uses **Web Workers** for GIF encoding, browsers block the worker from running via the `file://` protocol. You **must** run this project through a local server.
+You only need this if you want to export your beautiful art as a gif with it's wigglyness, otherwise you can just open index.html and get painting!
 
 1.  **Clone the project:**
     ```bash
@@ -50,14 +51,13 @@ Because this project uses **Web Workers** for GIF encoding, browsers block the w
 
 ## How to Use
 1.  **Draw:** Click and drag on the canvas to create your wiggly masterpiece.
-2.  **Toggle Wiggle:** Use the UI control, just beneath the BIRD to adjust or stop the animation.
+2.  **Toggle Wiggle:** Use the UI control, just under the BIRD to adjust or stop the animation.
 3.  **Change Colors:** Select from the 3-color palette (more colors coming soon?).
 4.  **Export:** * Click the disket at the bottom left on the toolbar. Selet static for PNG and toggle between background transparency.
 
 ## TODOS?
-- [ ] **MORE (or less?) WIGGLE** Ajust and control PRECISELY how much MORE wigglyness you DESERVE.
+- [ ] **MORE (or less?) WIGGLE** Ajust and control PRECISELY how much MORE wigglyness you deserve.
 - [ ] **MORE Palettes:** More readly avaliable palettes!!!!!!!
-- [ ] **MORE Color:** Allow more than three colors. It's a hard one, I like the simplicity andl imitations of three color palette but might increase to 5.
 - [ ] **LESS Jank** I'll the honest... The UX in this is not my greatest work... but it functions. Needs improving tho.
 
 ## 📜 Credits
