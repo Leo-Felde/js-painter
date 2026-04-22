@@ -184,7 +184,7 @@ body {
 }
 
 .size-btn {
-  display: block;
+  display: flex;
   padding: 4px;
   cursor: pointer;
   transition: all 0.05s linear;
@@ -218,30 +218,35 @@ body {
   height: 2px;
   width: 16px;
   background: var(--color-foreground);
+  margin: auto;
 }
 
 #width-indicator-2 {
   height: 6px;
   width: 16px;
   background: var(--color-foreground);
+  margin: auto;
 }
 
 #width-indicator-3 {
   height: 10px;
   width: 16px;
   background: var(--color-foreground);
+  margin: auto;
 }
 
 #width-indicator-4 {
   height: 14px;
   width: 16px;
   background: var(--color-foreground);
+  margin: auto;
 }
 
 #width-indicator-5 {
   height: 18px;
   width: 16px;
   background: var(--color-foreground);
+  margin: auto;
 }
 
 #colors-wrapper {
@@ -312,8 +317,12 @@ body {
   }
 
   .tool-btn {
-    width: 100px;
+    width: 40px;
     padding: 8px 12px;
+  }
+
+  .size-btn {
+    width: 100%;
   }
 
   .button-group::before {
@@ -341,65 +350,242 @@ body {
 }
 
 @media (max-width: 700px) {
+  #export-btn {
+    right: 14px;
+    bottom: -50px !important;
+    z-index: 1;
+  }
+  #top-decoration {
+    display: none;
+  }
+  #tool-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  #bottom-section {
+    position: relative;
+    bottom: 20px;
+  }
+
   #main-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 16px;
+    padding: 12px;
+    position: static;
+    transform: none;
+    border: none;
+    background: transparent;
+  }
+
+  #header-section {
+    order: 1;
+    width: 100%;
+    max-width: 100vw;
+    grid-column: unset;
+    grid-row: unset;
+    margin: 0;
+  }
+
+  #canvas-section {
+    order: 2;
+    grid-column: unset;
+    grid-row: unset;
+  }
+
+  #main-canvas {
+    width: 100vw;
+    height: auto;
+    max-width: calc(100vw - 24px);
+    aspect-ratio: 4 / 3;
+    border: 2px solid var(--color-foreground);
   }
 
   #tools-section {
-    margin-top: 20px;
+    order: 3;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0;
+    margin: 0;
+    grid-column: unset;
+    grid-row: unset;
+    height: auto;
+    background-color: var(--color-background);
   }
 
   #buttons-wrapper {
     display: flex;
-    flex-direction: row;
-    gap: 20px;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .button-group {
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 12px;
     margin-bottom: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .button-group.width-group {
+    justify-content: center;
+    border: 1px solid var(--color-foreground);
+    padding: 8px;
+    gap: 0;
+  }
+
+  .button-group.width-group .size-btn {
+    flex: 1;
+    min-width: 50px;
+    border-left: 1px solid var(--color-foreground);
+    border-right: 1px solid var(--color-foreground);
+  }
+
+  .button-group.width-group .size-btn:first-child {
+    border-left: 0;
+  }
+
+  .button-group.width-group .size-btn:last-child {
+    border-right: 0;
   }
 
   .tool-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: auto;
+    height: 44px;
+    padding: 8px 12px;
+    margin: 0;
+    flex: 0 1 auto;
+  }
+
+  .tool-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  #wiggle-btn,
+  #eraser-btn {
     margin-bottom: 0;
   }
 
-  .button-group::before {
-    display: none;
+  .separator {
+    width: 100%;
+    margin: 8px 0;
+    height: 1px;
   }
 
   #bottom-section {
-    margin-top: 20px;
+    order: 4;
     width: 100%;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--color-foreground);
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #colors-wrapper {
+    padding: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    gap: 8px;
+  }
+
+  .color-btn {
+    padding: 12px;
+    flex: 1;
+    min-width: 50px;
+  }
+
+  .color-btn:first-child {
+    margin-left: 0;
+  }
+
+  #palette-btn {
+    padding: 8px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  #palette-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  #export-btn {
+    position: static;
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #header-title {
+    padding: 8px;
+    font-size: 14px;
   }
 }
 
-@media print {
-  body {
-    background: white;
-  }
-
-  .tool-btn,
-  #tools-section,
-  #bottom-section:empty::before {
-    display: none;
-  }
-
-  #main-canvas {
-    box-shadow: none;
-    border: 1px solid var(--color-foreground);
+@media (max-width: 480px) {
+  #export-btn {
+    bottom: -45px !important;
   }
 
   #main-wrapper {
-    position: static;
-    transform: none;
-    display: block;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  #main-canvas {
+    max-width: calc(100vw - 16px);
+  }
+
+  .button-group {
+    gap: 4px;
+  }
+
+  .tool-btn {
+    padding: 6px 10px;
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .tool-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .color-btn {
+    padding: 10px;
+    min-width: 40px;
+    height: 40px;
+  }
+
+  #bottom-section {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  #colors-wrapper {
+    padding: 6px;
+    gap: 4px;
   }
 }
 

@@ -81,7 +81,8 @@ const primaryBtn = document.getElementById("primary-color");
 const secondaryBtn = document.getElementById("secondary-color");
 const tertiaryBtn = document.getElementById("tertiary-color");
 
-// ============================================================================
+const isMobile = navigator?.userAgentData?.mobile ?? false;
+// ================================================================1============
 // PALETTE & STYLING
 // ============================================================================
 
@@ -149,7 +150,6 @@ const applyPalette = () => {
   // Update state
   backgroundColor = colors.background;
   strokeColor = colors.foreground;
-  currentColor = colors.foreground;
 
   // Remap colors in existing strokes
   remapStrokeColors();
@@ -186,6 +186,11 @@ function populatePaletteList() {
 
 function selectPalette(palette) {
   currentEditingPalette = { ...palette };
+
+  lastSelectedColor.color = palette[lastSelectedColor.type];
+  if (currentMode === "color") {
+    setActiveColorButton(lastSelectedColor.btn, lastSelectedColor.color);
+  }
 
   document.getElementById("palette-bg-input").value = palette.background;
   document.getElementById("palette-bg-input-text").value = palette.background;
@@ -244,16 +249,16 @@ function updateCurrentPalette() {
 // ============================================================================
 // BUTTON HELPERS
 // ============================================================================
-const clearAllActiveButtons = () => {
+function clearAllActiveButtons() {
   primaryBtn.classList.remove("active");
   secondaryBtn.classList.remove("active");
   tertiaryBtn.classList.remove("active");
   penButton.classList.remove("active");
   brushButton.classList.remove("active");
   eraserButton.classList.remove("active");
-};
+}
 
-const setActiveColorButton = (activeBtn, color) => {
+function setActiveColorButton(activeBtn, color) {
   clearAllActiveButtons();
   activeBtn.classList.add("active");
   brushButton.classList.add("active");
@@ -262,7 +267,7 @@ const setActiveColorButton = (activeBtn, color) => {
   currentColor = color;
   currentWidth = colorWidth;
   canvas.style.cursor = "default";
-};
+}
 
 // ============================================================================
 // EXPORT FUNCTIONALITY
@@ -535,16 +540,43 @@ const updateSizeButtons = () => {
 // CANVAS DRAWING EVENT LISTENERS
 // ============================================================================
 canvas.addEventListener("mousedown", (e) => {
+  if (isMobile) return;
+  handleStart(e);
+});
+canvas.addEventListener("touchstart", (e) => {
+  if (!isMobile) return;
+  let touch = e.touches[0];
+
+  handleStart(touch);
+});
+
+function handleStart(e) {
   const pos = getScaledMousePos(e);
   isDrawing = true;
   currentPoints = [{ x: pos.x, y: pos.y }];
   startAnimation();
+  handleMovement();
+}
+
+canvas.addEventListener("touchmove", (e) => {
+  if (!isMobile) return;
+  let touch = e.touches[0];
+  handleMovement(touch);
+});
+canvas.addEventListener("mousemove", (e) => {
+  if (isMobile) return;
+  handleMovement(e);
 });
 
-canvas.addEventListener("mousemove", (e) => {
-  if (!isDrawing) return;
+function handleMovement(e) {
+  if (!isDrawing || e === undefined) return;
   const pos = getScaledMousePos(e);
   currentPoints.push({ x: pos.x, y: pos.y });
+}
+
+canvas.addEventListener("touchend", () => {
+  isDrawing = false;
+  stopDrawing();
 });
 
 canvas.addEventListener("mouseup", () => {
@@ -613,6 +645,7 @@ canvas.height = canvas.clientHeight;
 
 // due to the actual resolution being smaller than the screen, get position relative to canvas size :)
 function getScaledMousePos(e) {
+  if (e === undefined) return;
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
