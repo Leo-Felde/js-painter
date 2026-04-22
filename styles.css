@@ -139,6 +139,10 @@ body {
   border: 1px solid var(--color-foreground);
 }
 
+#nuke-btn {
+  margin-top: 12px;
+}
+
 #wiggle-btn,
 #eraser-btn {
   margin-bottom: 15px;

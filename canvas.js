@@ -44,6 +44,7 @@ let currentWidth = penWidth;
 // Undo system
 let maxUndos = 5;
 let currentUndos = 0;
+let nukedStrokes = null; // Store nuked strokes for undo
 
 // ============================================================================
 // WIGGLE ANIMATION
@@ -276,6 +277,88 @@ function setActiveColorButton(activeBtn, color) {
 }
 
 // ============================================================================
+// KEYBOARD SHORTCUTS
+// ============================================================================
+document.addEventListener("keydown", (e) => {
+  if (isMobile) return;
+
+  // Ctrl+Z for undo
+  if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+    e.preventDefault();
+    undoButton.click();
+  }
+
+  // 1, 2, 3 for colors
+  if (e.key === "1") {
+    e.preventDefault();
+    primaryBtn.click();
+  }
+  if (e.key === "2") {
+    e.preventDefault();
+    secondaryBtn.click();
+  }
+  if (e.key === "3") {
+    e.preventDefault();
+    tertiaryBtn.click();
+  }
+
+  // B for Pencil
+  if (e.key.toLowerCase() === "b") {
+    e.preventDefault();
+    penButton.click();
+  }
+
+  // C for Brush
+  if (e.key.toLowerCase() === "c") {
+    e.preventDefault();
+    brushButton.click();
+  }
+
+  // E for Eraser
+  if (e.key.toLowerCase() === "e") {
+    e.preventDefault();
+    eraserButton.click();
+  }
+
+  // W for Wiggle
+  if (e.key.toLowerCase() === "w") {
+    e.preventDefault();
+    wiggleButton.click();
+  }
+
+  // [ and ] for size adjustment
+  if (e.key === "[") {
+    e.preventDefault();
+    const widthButtons = document.querySelectorAll(
+      ".size-btn:not([style*='display: none'])",
+    );
+    if (widthButtons.length > 0) {
+      const currentIndex = Array.from(widthButtons).findIndex((btn) =>
+        btn.classList.contains("active"),
+      );
+      if (currentIndex > 0) {
+        widthButtons[currentIndex - 1].click();
+      }
+    }
+  }
+
+  if (e.key === "]") {
+    e.preventDefault();
+    const widthButtons = document.querySelectorAll(
+      ".size-btn:not([style*='display: none'])",
+    );
+    if (widthButtons.length > 0) {
+      const currentIndex = Array.from(widthButtons).findIndex((btn) =>
+        btn.classList.contains("active"),
+      );
+      if (currentIndex < widthButtons.length - 1) {
+        widthButtons[currentIndex + 1].click();
+      }
+    }
+  }
+});
+
+// ============================================================================
 // EXPORT FUNCTIONALITY
 // ============================================================================
 
@@ -489,15 +572,24 @@ eraserButton.addEventListener("click", (e) => {
 });
 
 undoButton.addEventListener("click", (e) => {
-  if (currentUndos > 0) {
+  // restore nuke
+  if (nukedStrokes !== null && currentUndos === 0) {
+    strokes = nukedStrokes;
+    nukedStrokes = null;
+    currentUndos = 0;
+  } else if (currentUndos > 0) {
+    nukedStrokes = null;
     strokes.pop();
     currentUndos--;
   }
 });
 
 nukeButton.addEventListener("click", (e) => {
-  strokes.length = 0;
-  currentUndos = 0;
+  if (strokes.length > 0) {
+    nukedStrokes = [...strokes]; // Save strokes before nuking
+    strokes.length = 0;
+    currentUndos = 0;
+  }
 });
 
 // Stroke size
