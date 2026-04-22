@@ -81,7 +81,10 @@ const primaryBtn = document.getElementById("primary-color");
 const secondaryBtn = document.getElementById("secondary-color");
 const tertiaryBtn = document.getElementById("tertiary-color");
 
-const isMobile = navigator?.userAgentData?.mobile ?? false;
+const isMobile =
+  navigator?.userAgentData?.mobile ??
+  /Mobi|Android|iPhone/i.test(navigator.userAgent) ??
+  false;
 // ================================================================1============
 // PALETTE & STYLING
 // ============================================================================
@@ -545,6 +548,7 @@ canvas.addEventListener("mousedown", (e) => {
 });
 canvas.addEventListener("touchstart", (e) => {
   if (!isMobile) return;
+  e.preventDefault();
   let touch = e.touches[0];
 
   handleStart(touch);
@@ -560,6 +564,7 @@ function handleStart(e) {
 
 canvas.addEventListener("touchmove", (e) => {
   if (!isMobile) return;
+  e.preventDefault();
   let touch = e.touches[0];
   handleMovement(touch);
 });
@@ -574,7 +579,9 @@ function handleMovement(e) {
   currentPoints.push({ x: pos.x, y: pos.y });
 }
 
-canvas.addEventListener("touchend", () => {
+canvas.addEventListener("touchend", (e) => {
+  if (!isMobile) return;
+  e.preventDefault();
   isDrawing = false;
   stopDrawing();
 });
