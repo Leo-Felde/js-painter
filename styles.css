@@ -140,7 +140,7 @@ body {
 }
 
 #nuke-btn {
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 #wiggle-btn,
@@ -548,6 +548,11 @@ body {
 }
 
 @media (max-width: 480px) {
+  #nuke-btn {
+    margin-top: 0px;
+    margin-left: 24px;
+  }
+
   #export-btn {
     bottom: -45px !important;
   }

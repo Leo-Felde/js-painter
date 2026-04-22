@@ -1,6 +1,15 @@
 // ============================================================================
 // CANVAS SETUP
 // ============================================================================
+
+window.addEventListener("beforeunload", (e) => {
+  if (strokes.length > 5) {
+    e.preventDefault();
+    e.returnValue = "";
+    return "";
+  }
+});
+
 const PIXEL_SCALE = 4;
 const DISPLAY_WIDTH = 560;
 const DISPLAY_HEIGHT = 420;
@@ -572,23 +581,20 @@ eraserButton.addEventListener("click", (e) => {
 });
 
 undoButton.addEventListener("click", (e) => {
-  // restore nuke
-  if (nukedStrokes !== null && currentUndos === 0) {
+  if (nukedStrokes !== null) {
     strokes = nukedStrokes;
     nukedStrokes = null;
-    currentUndos = 0;
   } else if (currentUndos > 0) {
     nukedStrokes = null;
     strokes.pop();
-    currentUndos--;
   }
+  currentUndos--;
 });
 
 nukeButton.addEventListener("click", (e) => {
   if (strokes.length > 0) {
     nukedStrokes = [...strokes]; // Save strokes before nuking
     strokes.length = 0;
-    currentUndos = 0;
   }
 });
 
