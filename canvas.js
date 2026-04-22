@@ -90,6 +90,15 @@ const nukeButton = document.getElementById("nuke-btn");
 const primaryBtn = document.getElementById("primary-color");
 const secondaryBtn = document.getElementById("secondary-color");
 const tertiaryBtn = document.getElementById("tertiary-color");
+const backgroundBtn = document.getElementById("background-color");
+
+const transparencyMaskCheckbox = document.getElementById(
+  "transparency-mask-checkbox",
+);
+transparencyMaskCheckbox.checked = false;
+
+let isTransparencyMask = false;
+let backgroundBrushColor = "#ffffff";
 
 const isMobile =
   navigator?.userAgentData?.mobile ??
@@ -159,6 +168,7 @@ const applyPalette = () => {
   primaryBtn.style.backgroundColor = colors.primary;
   secondaryBtn.style.backgroundColor = colors.secondary;
   tertiaryBtn.style.backgroundColor = colors.tertiary;
+  backgroundBtn.style.backgroundColor = colors.background;
 
   // Update state
   backgroundColor = colors.background;
@@ -220,6 +230,8 @@ function selectPalette(palette) {
   document.getElementById("palette-tertiary-input").value = palette.tertiary;
   document.getElementById("palette-tertiary-input-text").value =
     palette.tertiary;
+
+  backgroundBrushColor = palette.background;
 
   colors = currentEditingPalette;
   applyPalette();
@@ -361,6 +373,7 @@ function clearAllActiveButtons() {
   primaryBtn.classList.remove("active");
   secondaryBtn.classList.remove("active");
   tertiaryBtn.classList.remove("active");
+  backgroundBtn.classList.remove("active");
   penButton.classList.remove("active");
   brushButton.classList.remove("active");
   eraserButton.classList.remove("active");
@@ -395,11 +408,10 @@ document.addEventListener("keydown", (e) => {
 
   // Ctrl+Z for undo
   if ((e.ctrlKey || e.metaKey) && e.key === "z") {
-    e.preventDefault();
     undoButton.click();
   }
 
-  // 1, 2, 3 for colors
+  // 1, 2, 3, 4 for colors
   if (e.key === "1") {
     e.preventDefault();
     primaryBtn.click();
@@ -411,6 +423,10 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "3") {
     e.preventDefault();
     tertiaryBtn.click();
+  }
+  if (e.key === "4" && isTransparencyMask) {
+    e.preventDefault();
+    backgroundBtn.click();
   }
 
   // B for Pencil
@@ -473,7 +489,6 @@ document.addEventListener("keydown", (e) => {
 // EXPORT FUNCTIONALITY
 // ============================================================================
 
-const exportBtn = document.getElementById("export-btn");
 const exportModal = document.getElementById("export-modal");
 const exportModalClose = document.getElementById("export-modal-close");
 const exportStaticCheckbox = document.getElementById("export-static");
@@ -482,11 +497,6 @@ const exportFilenameInput = document.getElementById("export-filename-input");
 const exportDoBtn = document.getElementById("export-do-btn");
 const exportCancelBtn = document.getElementById("export-cancel-btn");
 const headerTitleInput = document.getElementById("header-title");
-
-exportBtn.addEventListener("click", () => {
-  exportModal.style.display = "block";
-  exportFilenameInput.value = headerTitleInput.value || "untitled";
-});
 
 exportModalClose.addEventListener("click", () => {
   exportModal.style.display = "none";
@@ -637,6 +647,16 @@ tertiaryBtn.addEventListener("click", (e) => {
     color: colors.tertiary,
   };
   setActiveColorButton(tertiaryBtn, colors.tertiary);
+  updateSizeButtons();
+});
+backgroundBtn.addEventListener("click", (e) => {
+  if (!isTransparencyMask) return;
+  lastSelectedColor = {
+    type: "background",
+    btn: backgroundBtn,
+    color: colors.background,
+  };
+  setActiveColorButton(backgroundBtn, colors.background);
   updateSizeButtons();
 });
 
@@ -986,3 +1006,80 @@ function drawStroke(targetCtx, points, mode, color, lineWidth, strokeSeed = 0) {
 
   targetCtx.restore();
 }
+
+// ============================================================================
+// MENU BAR EVENT LISTENERS
+// ============================================================================
+
+const menuOptionsBtn = document.getElementById("menu-options-btn");
+const optionsDropdown = document.getElementById("options-dropdown");
+const menuWiggleToggle = document.getElementById("menu-wiggle-toggle");
+const menuPalette = document.getElementById("menu-palette");
+const menuExport = document.getElementById("menu-export");
+
+menuOptionsBtn.addEventListener("click", () => {
+  optionsDropdown.style.display =
+    optionsDropdown.style.display === "none" ? "block" : "none";
+});
+
+menuWiggleToggle.addEventListener("click", () => {
+  wiggleButton.click();
+  optionsDropdown.style.display = "none";
+});
+
+menuPalette.addEventListener("click", () => {
+  paletteBtn.click();
+  optionsDropdown.style.display = "none";
+});
+
+menuExport.addEventListener("click", () => {
+  exportModal.style.display = "block";
+  exportFilenameInput.value = headerTitleInput.value || "untitled";
+  optionsDropdown.style.display = "none";
+});
+
+// Close dropdown when clicking elsewhere
+document.addEventListener("click", (e) => {
+  if (
+    !menuOptionsBtn.contains(e.target) &&
+    !optionsDropdown.contains(e.target)
+  ) {
+    optionsDropdown.style.display = "none";
+  }
+});
+
+// Update wiggle toggle text based on state
+function updateWiggleToggleText() {
+  menuWiggleToggle.textContent = isWiggly ? "Stop Wiggling" : "Resume Wiggling";
+}
+
+// Update text whenever wiggle is toggled
+const originalWiggleClick = wiggleButton.click;
+wiggleButton.addEventListener("click", () => {
+  updateWiggleToggleText();
+});
+
+transparencyMaskCheckbox.addEventListener("change", (e) => {
+  isTransparencyMask = e.target.checked;
+
+  if (isTransparencyMask) {
+    canvas.classList.add("transparency-mask");
+    exportTransparentCheckbox.checked = true;
+    backgroundBtn.style.display = "block";
+  } else {
+    canvas.classList.remove("transparency-mask");
+    exportTransparentCheckbox.checked = false;
+
+    backgroundBtn.style.display = "none";
+    if (currentMode === "color" && lastSelectedColor.type === "background") {
+      lastSelectedColor = {
+        type: "primary",
+        btn: primaryBtn,
+        color: colors.primary,
+      };
+      setActiveColorButton(primaryBtn, colors.primary);
+    }
+  }
+
+  drawAllStrokes();
+});
