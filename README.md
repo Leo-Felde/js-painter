@@ -1,7 +1,11 @@
 # Chirp JS-Painter
 name is a work in proggress™
 
-<img width="500" height="430" alt="A cool gif showing the tool" src="https://github.com/user-attachments/assets/fa7a05de-d160-467c-a54a-ffdf48831cd4" />
+<div align="center">
+    <img width="500" height="430" alt="A cool gif showing the tool" src="https://github.com/user-attachments/assets/fa7a05de-d160-467c-a54a-ffdf48831cd4" />
+</div>
+
+> ### 🚀 [**Try the Live Demo here!**](https://leo-felde.github.io/js-painter/)
 
 A minimalist, high(er?)-resolution creative painting tool built with vanilla JavaScript and HTML5 Canvas. Inspired by the concept of "wiggly" art, this project allows users to readly create art whithout downloading or configuring apps.
 Just pick a color palette and start drawing!
