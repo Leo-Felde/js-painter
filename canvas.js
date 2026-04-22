@@ -121,8 +121,8 @@ let lastSelectedColor = {
   color: colors.primary,
 };
 
-let backgroundColor = "#ffffff";
-let strokeColor = "#000000";
+let backgroundColor = colors.background ?? "#ffffff";
+let strokeColor = colors.foreground ?? "#000000";
 
 const applyPalette = () => {
   // Update CSS variables
@@ -153,6 +153,7 @@ const applyPalette = () => {
   // Update state
   backgroundColor = colors.background;
   strokeColor = colors.foreground;
+  currentColor = colors.foreground;
 
   // Remap colors in existing strokes
   remapStrokeColors();
