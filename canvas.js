@@ -6,6 +6,7 @@ const DISPLAY_WIDTH = 560;
 const DISPLAY_HEIGHT = 420;
 
 const canvas = document.getElementById("main-canvas");
+const wrapper = document.getElementById("main-wrapper");
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
 ctx.lineCap = "round";
@@ -31,8 +32,12 @@ let animationId = null;
 // Drawing modes and properties
 let currentMode = "pen"; // "pen", "color", or "eraser"
 let currentColor = "#000000";
-let penWidth = 7;
-let colorWidth = 14;
+const penSizes = [5, 7, 9];
+let penSizeIndex = 1;
+let penWidth = penSizes[penSizeIndex];
+const brushSizes = [5, 7, 14, 19, 24, 30];
+let brushSizeIndex = 3;
+let colorWidth = brushSizes[brushSizeIndex];
 let eraserWidth = 15;
 let currentWidth = penWidth;
 
@@ -67,6 +72,7 @@ const noiseTableY = Array.from(
 // ============================================================================
 const wiggleButton = document.getElementById("wiggle-btn");
 const penButton = document.getElementById("pen-btn");
+const brushButton = document.getElementById("brush-btn");
 const eraserButton = document.getElementById("eraser-btn");
 const undoButton = document.getElementById("undo-btn");
 const nukeButton = document.getElementById("nuke-btn");
@@ -78,25 +84,61 @@ const tertiaryBtn = document.getElementById("tertiary-color");
 // ============================================================================
 // PALETTE & STYLING
 // ============================================================================
-const colors = DEFAULT_PALETTE.find((p) => p.name === "Nord-ish");
+
+let colors = DEFAULT_PALETTE.find((p) => p.name === "Nord-ish");
+const styleSheet = new CSSStyleSheet();
+
+document.getElementById("palette-test").addEventListener("click", () => {
+  colors = DEFAULT_PALETTE[Math.floor(Math.random() * DEFAULT_PALETTE.length)];
+  applyPalette();
+});
+
+let lastSelectedColor = {
+  type: "primary",
+  btn: primaryBtn,
+  color: colors.primary,
+};
 
 let backgroundColor = "#ffffff";
 let strokeColor = "#000000";
 
 const applyPalette = () => {
-  canvas.style.backgroundColor = colors.background;
-  document.body.style.backgroundImage = `radial-gradient(${colors.foreground} 0.8px, ${colors.background} 0.8px)`;
-  document.body.style.color = colors.foreground;
+  // Update CSS variables
+  document.documentElement.style.setProperty(
+    "--color-foreground",
+    colors.foreground,
+  );
+  document.documentElement.style.setProperty(
+    "--color-background",
+    colors.background,
+  );
+  document.documentElement.style.setProperty("--color-primary", colors.primary);
+  document.documentElement.style.setProperty(
+    "--color-secondary",
+    colors.secondary,
+  );
+  document.documentElement.style.setProperty(
+    "--color-tertiary",
+    colors.tertiary,
+  );
 
+  // Update canvas and buttons
+  canvas.style.backgroundColor = colors.background;
   primaryBtn.style.backgroundColor = colors.primary;
   secondaryBtn.style.backgroundColor = colors.secondary;
   tertiaryBtn.style.backgroundColor = colors.tertiary;
 
+  // Update state
   backgroundColor = colors.background;
   strokeColor = colors.foreground;
   currentColor = colors.foreground;
-};
 
+  // Remap colors in existing strokes
+  remapStrokeColors();
+
+  // Redraw canvas
+  drawAllStrokes();
+};
 applyPalette();
 
 // ============================================================================
@@ -107,12 +149,14 @@ const clearAllActiveButtons = () => {
   secondaryBtn.classList.remove("active");
   tertiaryBtn.classList.remove("active");
   penButton.classList.remove("active");
+  brushButton.classList.remove("active");
   eraserButton.classList.remove("active");
 };
 
 const setActiveColorButton = (activeBtn, color) => {
   clearAllActiveButtons();
   activeBtn.classList.add("active");
+  brushButton.classList.add("active");
 
   currentMode = "color";
   currentColor = color;
@@ -164,15 +208,33 @@ document
 // COLOR BUTTON EVENT LISTENERS
 // ============================================================================
 primaryBtn.addEventListener("click", (e) => {
+  lastSelectedColor = {
+    type: "primary",
+    btn: primaryBtn,
+    color: colors.primary,
+  };
   setActiveColorButton(primaryBtn, colors.primary);
+  updateSizeButtons();
 });
 
 secondaryBtn.addEventListener("click", (e) => {
+  lastSelectedColor = {
+    type: "secondary",
+    btn: secondaryBtn,
+    color: colors.secondary,
+  };
   setActiveColorButton(secondaryBtn, colors.secondary);
+  updateSizeButtons();
 });
 
 tertiaryBtn.addEventListener("click", (e) => {
+  lastSelectedColor = {
+    type: "tertiary",
+    btn: tertiaryBtn,
+    color: colors.tertiary,
+  };
   setActiveColorButton(tertiaryBtn, colors.tertiary);
+  updateSizeButtons();
 });
 
 // ============================================================================
@@ -195,6 +257,17 @@ penButton.addEventListener("click", (e) => {
   currentColor = colors.foreground;
   currentWidth = penWidth;
   canvas.style.cursor = "default";
+  updateSizeButtons();
+});
+
+brushButton.addEventListener("click", (e) => {
+  clearAllActiveButtons();
+  brushButton.classList.add("active");
+
+  currentMode = "color";
+  setActiveColorButton(lastSelectedColor.btn, lastSelectedColor.color);
+  canvas.style.cursor = "default";
+  updateSizeButtons();
 });
 
 eraserButton.addEventListener("click", (e) => {
@@ -217,6 +290,48 @@ nukeButton.addEventListener("click", (e) => {
   strokes.length = 0;
   currentUndos = 0;
 });
+
+// Stroke size
+document.querySelectorAll(".size-btn").forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    if (currentMode === "pen") {
+      penSizeIndex = index;
+      penWidth = penSizes[penSizeIndex];
+      currentWidth = penWidth;
+    } else if (currentMode === "color") {
+      brushSizeIndex = index;
+      colorWidth = brushSizes[brushSizeIndex];
+      currentWidth = colorWidth;
+    }
+    updateSizeButtons();
+  });
+});
+
+const updateSizeButtons = () => {
+  const widthButtons = document.querySelectorAll(".size-btn");
+  widthButtons.forEach((btn, index) => {
+    btn.classList.remove("active");
+    btn.classList.remove("circle-mode");
+
+    if (currentMode === "pen") {
+      if (index < 3) {
+        btn.style.display = "block";
+        if (index === penSizeIndex) {
+          btn.classList.add("active");
+        }
+      } else {
+        btn.style.display = "none";
+      }
+    } else if (currentMode === "color") {
+      // Show all 6 buttons for brush
+      btn.style.display = "block";
+      btn.classList.add("circle-mode");
+      if (index === brushSizeIndex) {
+        btn.classList.add("active");
+      }
+    }
+  });
+};
 
 // ============================================================================
 // CANVAS DRAWING EVENT LISTENERS
@@ -254,6 +369,8 @@ function stopDrawing() {
       points: [...currentPoints],
       mode: currentMode,
       color: currentColor,
+      colorType:
+        currentMode === "color" ? lastSelectedColor.type : "foreground",
       lineWidth: currentWidth,
       layer: currentMode === "color" ? 0 : 1,
       seed: currentStrokeSeed,
@@ -354,6 +471,16 @@ function drawAllStrokes() {
 
   // MERGE: Put the Pen layer on top of the Color layer
   ctx.drawImage(offscreenCanvas, 0, 0);
+}
+
+function remapStrokeColors() {
+  strokes.forEach((stroke) => {
+    if (stroke.colorType === "foreground") {
+      stroke.color = colors.foreground;
+    } else {
+      stroke.color = colors[stroke.colorType];
+    }
+  });
 }
 
 function drawStroke(targetCtx, points, mode, color, lineWidth, strokeSeed = 0) {

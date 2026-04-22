@@ -1,3 +1,11 @@
+:root {
+  --color-foreground: #242424;
+  --color-background: #e8e8e8;
+  --color-primary: #bf616a;
+  --color-secondary: #a3be8c;
+  --color-tertiary: #b48ead;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,9 +20,13 @@ html {
 body {
   height: 100%;
   width: 100%;
-  background-image: radial-gradient(#242424 0.8px, #e8e8e8 0.8px);
+  background-image: radial-gradient(
+    var(--color-foreground) 0.8px,
+    var(--color-background) 0.8px
+  );
   background-size: 5px 5px;
   font-family: "Courier New", monospace, system-ui;
+  color: var(--color-foreground);
 }
 
 #main-wrapper {
@@ -24,26 +36,56 @@ body {
   transform: translate(-50%, -50%);
   display: grid;
   grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
-  gap: 20px;
-  padding: 24px;
-  background: transparent;
+  grid-template-rows: auto auto auto;
+  padding: 2px;
+  border: 3px solid var(--color-foreground);
+  background-color: var(--color-background);
+  background-size: 5px 5px;
+}
+
+#header-section {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--color-foreground),
+    var(--color-foreground) 1px,
+    var(--color-background) 1px,
+    var(--color-background)
+  );
+  background-size: 1px 4px;
+  height: 27px;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+#header-title {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  border: none;
+  text-align: center;
+  height: 25px;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
 #canvas-section {
-  grid-column: 1;
-  grid-row: 1;
+  grid-column: 2;
+  grid-row: 2;
 }
 
 #tools-section {
-  grid-column: 2;
-  grid-row: 1;
+  padding-right: 2px;
+  grid-column: 1;
+  grid-row: 1 / span 2;
   align-self: start;
 }
 
 #bottom-section {
   grid-column: 1 / span 2;
-  grid-row: 2;
+  grid-row: 3;
   padding-top: 10px;
   min-height: 80px;
 }
@@ -54,10 +96,8 @@ body {
   display: block;
   width: 800px;
   height: 600px;
-  border: 3px solid #1a1a1a;
-  box-shadow: 6px 6px 0px 0px #1a1a1a;
-  cursor: crosshair;
-  background-color: white;
+  border: 3px solid var(--color-foreground);
+  background-color: var(--color-background);
 }
 
 #buttons-wrapper {
@@ -67,6 +107,14 @@ body {
 
 .button-group {
   display: block;
+}
+
+.width-group {
+  border: 1px solid var(--color-foreground);
+}
+
+#wiggle-btn,
+#eraser-btn {
   margin-bottom: 15px;
 }
 
@@ -74,93 +122,122 @@ body {
   margin-bottom: 0;
 }
 
-.button-group::before {
-  display: block;
-  font-size: 11px;
-  font-weight: bold;
-  color: #666;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-}
-
 .tool-btn {
   display: block;
-  width: 120px;
-  background: white;
-  border: 2px solid #1a1a1a;
-  padding: 10px;
-  margin: 0 0 10px 0;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-  font-weight: bold;
+  padding: 4px;
   cursor: pointer;
-  box-shadow: 3px 3px 0px 0px #1a1a1a;
   transition: all 0.05s linear;
-  letter-spacing: 0.5px;
-  text-align: left;
+  stroke: var(--color-foreground);
+  fill: var(--color-foreground);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-foreground);
+}
+
+.tool-btn.active {
+  stroke: var(--color-background) !important;
+  fill: var(--color-background) !important;
+  background-color: var(--color-foreground);
+}
+
+.tool-btn:hover {
+  stroke: var(--color-background);
+  fill: var(--color-background);
+  background-color: var(--color-foreground);
+}
+
+.tool-btn.active .svg-icon {
+  color: var(--color-background);
+}
+
+.tool-btn:hover .svg-icon {
+  color: var(--color-background);
+}
+
+.size-btn {
+  display: block;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.05s linear;
+  border: none;
+  margin-bottom: 4px;
+  background-color: var(--color-background);
+  border: solid 1px transparent;
+  border-left: 0px;
+  border-right: 0px;
+}
+.size-btn:first-child {
+  border-top: 0px;
+}
+.size-btn:last-child {
+  border-bottom: 0px;
+}
+
+.size-btn.active {
+  border-color: var(--color-foreground) !important;
+}
+
+.size-btn:last-child.active {
+  border-bottom: 0px !important;
+}
+
+#width-indicator-1 {
+  height: 2px;
+  width: 16px;
+  background: var(--color-foreground);
+}
+
+#width-indicator-2 {
+  height: 6px;
+  width: 16px;
+  background: var(--color-foreground);
+}
+
+#width-indicator-3 {
+  height: 10px;
+  width: 16px;
+  background: var(--color-foreground);
+}
+
+#width-indicator-4 {
+  height: 14px;
+  width: 16px;
+  background: var(--color-foreground);
+}
+
+#width-indicator-5 {
+  height: 18px;
+  width: 16px;
+  background: var(--color-foreground);
+}
+
+.color-btn {
+  padding: 12px;
+  margin: 12px;
+}
+
+.separator {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  height: 17px;
+  width: 100%;
+  background-image: radial-gradient(
+    var(--color-foreground) 0.8px,
+    var(--color-background) 0.8px
+  );
+  background-size: 3px 2px;
+  border-top: 1px solid var(--color-foreground);
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 1px solid var(--color-foreground);
+  border-style: solid;
+}
+
+.separator.no-margins {
+  margin: 0px !important;
 }
 
 .tool-btn:last-child {
   margin-bottom: 0;
-}
-
-.tool-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px 0px #1a1a1a;
-  background: #f0f0f0;
-}
-
-.tool-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px #1a1a1a;
-}
-
-.tool-btn.active {
-  background: #1a1a1a;
-  color: white;
-  box-shadow: 2px 2px 0px 0px #1a1a1a;
-  transform: translate(1px, 1px);
-}
-
-.tool-btn.active:hover {
-  background: #333;
-  transform: translate(0px, 0px);
-}
-
-.tool-btn.danger {
-  border-color: #cc0000;
-  color: #cc0000;
-  box-shadow: 3px 3px 0px 0px #cc0000;
-}
-
-.tool-btn.danger:hover {
-  background: #cc0000;
-  color: white;
-  border-color: #cc0000;
-  box-shadow: 4px 4px 0px 0px #cc0000;
-}
-
-.tool-btn.danger:active {
-  background: #990000;
-  color: white;
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px #990000;
-}
-
-#wiggle-btn.active {
-  background: #4a90e2;
-  border-color: #4a90e2;
-  color: white;
-}
-
-#pen-btn.active {
-  background: #2c3e50;
-  border-color: #2c3e50;
-}
-
-#eraser-btn.active {
-  background: #e67e22;
-  border-color: #e67e22;
 }
 
 #bottom-section {
@@ -188,7 +265,6 @@ body {
   .tool-btn {
     width: 100px;
     padding: 8px 12px;
-    font-size: 12px;
   }
 
   .button-group::before {
@@ -212,7 +288,6 @@ body {
   .tool-btn {
     width: 90px;
     padding: 6px 10px;
-    font-size: 11px;
   }
 }
 
@@ -269,7 +344,7 @@ body {
 
   #main-canvas {
     box-shadow: none;
-    border: 1px solid black;
+    border: 1px solid var(--color-foreground);
   }
 
   #main-wrapper {
@@ -277,4 +352,19 @@ body {
     transform: none;
     display: block;
   }
+}
+
+#baka-1 {
+  stroke: var(--color-primary);
+}
+#baka-2 {
+  stroke: var(--color-secondary);
+}
+#baka-3 {
+  stroke: var(--color-tertiary);
+}
+
+#top-decoration {
+  fill: var(--color-foreground);
+  stroke: var(--color-foreground);
 }
