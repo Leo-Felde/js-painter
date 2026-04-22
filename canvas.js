@@ -342,7 +342,7 @@ function exportAsPNG(transparent = false, filename = "untitled") {
 async function exportAsGIF(transparent = false, filename = "untitled") {
   if (!window.GIF) {
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js";
+    script.src = "gif.js";
     script.async = true;
     document.head.appendChild(script);
 
@@ -352,10 +352,11 @@ async function exportAsGIF(transparent = false, filename = "untitled") {
   }
 
   const gif = new GIF({
-    workers: 1,
+    workers: 2,
     quality: 10,
     width: canvas.width,
     height: canvas.height,
+    workerScript: "gif.worker.js",
   });
 
   let frameCount = 0;

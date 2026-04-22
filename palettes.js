@@ -127,4 +127,12 @@ const DEFAULT_PALETTE = [
     secondary: "#334CDD",
     tertiary: "#3E3C58",
   },
+  {
+    name: "Liminal 5",
+    background: "#958E75",
+    foreground: "#000000",
+    primary: "#8B7131",
+    secondary: "#474437",
+    tertiary: "#415748",
+  },
 ];
