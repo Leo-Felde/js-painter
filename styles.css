@@ -681,6 +681,11 @@ body {
   border-right: 2px solid var(--color-foreground);
   padding: 10px;
   background-color: var(--color-background);
+  background-image: radial-gradient(
+    var(--color-foreground) 0.8px,
+    var(--color-background) 0.8px
+  );
+  background-size: 5px 5px;
 }
 
 .palette-item {
@@ -693,11 +698,7 @@ body {
 }
 
 .palette-item:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--color-foreground),
-    transparent 50%
-  );
+  background-color: color-mix(in srgb, var(--color-foreground), white 30%);
   color: var(--color-background);
 }
 
