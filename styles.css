@@ -361,7 +361,6 @@ input[type="checkbox"] {
   #main-wrapper {
     position: static;
     transform: none;
-    padding: 16px;
     justify-content: center;
   }
 
