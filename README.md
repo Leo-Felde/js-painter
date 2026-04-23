@@ -1,5 +1,5 @@
 # Chirp Paint — Wiggly Canvas Playground
-[![](https://img.shields.io/badge/Live_Demo-Play_Now!-yellow?&logo=javascript)]([https://leo-felde.github.io/js-painter/](https://leo-felde.github.io/js-wiggly-canvas/))
+[![](https://img.shields.io/badge/Live_Demo-Play_Now!-yellow?&logo=javascript)](https://leo-felde.github.io/js-wiggly-canvas/)
 <p>A minimalist drawing tool built with vanilla JavaScript and HTML5 Canvas</p>
 
 Pick your colors, draw, and share your art! No installs, no setups, just fun
@@ -22,7 +22,7 @@ Pick your colors, draw, and share your art! No installs, no setups, just fun
 
 </div>
 
-> ### 🚀 [**Try the Live Demo here!**](https://leo-felde.github.io/js-wiggly-canvas/)
+> ### 🚀 [**Try drawing NOW!**](https://leo-felde.github.io/js-wiggly-canvas/)
 
 ## Key Enhancements
 * **Higher Resolution:** Almost DOUBLE the resolution of the original wigglypaint!
