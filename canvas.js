@@ -521,21 +521,28 @@ exportStaticCheckbox.addEventListener("change", () => {
   }
 });
 
-exportDoBtn.addEventListener("click", () => {
+exportDoBtn.addEventListener("click", async () => {
   const filename = exportFilenameInput.value || "untitled";
   const isTransparent = exportTransparentCheckbox.checked;
   const isStatic = exportStaticCheckbox.checked;
 
   if (isStatic) {
-    exportAsPNG(isTransparent, filename);
+    if (isWiggly) {
+      isWiggly = false;
+      setTimeout(() => {
+        exportAsPNG(isTransparent, filename);
+        isWiggly = true;
+      }, 100);
+    } else {
+      exportAsPNG(isTransparent, filename);
+    }
   } else {
-    exportAsGIF(isTransparent, filename);
+    await exportAsGIF(isTransparent, filename);
   }
 
   exportModal.style.display = "none";
 });
 
-// Update export functions with filename parameter
 function exportAsPNG(transparent = false, filename = "untitled") {
   const exportCanvas = document.createElement("canvas");
   exportCanvas.width = canvas.width;
@@ -561,30 +568,27 @@ async function exportAsGIF(transparent = false, filename = "untitled") {
     script.src = "gif.js";
     script.async = true;
     document.head.appendChild(script);
-
-    await new Promise((resolve) => {
-      script.onload = resolve;
-    });
+    await new Promise((resolve) => (script.onload = resolve));
   }
+
+  const originalWigglyState = isWiggly;
+
+  // Force wiggle ON
+  isWiggly = true;
 
   const gif = new GIF({
     workers: 2,
-    quality: 10,
+    quality: 5,
     width: canvas.width,
     height: canvas.height,
     workerScript: "gif.worker.js",
+    transparent: transparent ? 0x000000 : null,
   });
 
-  let frameCount = 0;
-  const totalFrames = WIGGLE_FPS * 2;
-  const savedWiggleFrame = wiggleFrame;
+  const totalFrames = WIGGLE_FPS;
+  const delay = 1000 / WIGGLE_FPS;
 
-  function captureFrame() {
-    if (frameCount >= totalFrames) {
-      gif.render();
-      return;
-    }
-
+  for (let i = 0; i < totalFrames; i++) {
     wiggleFrame++;
     drawAllStrokes();
 
@@ -594,15 +598,12 @@ async function exportAsGIF(transparent = false, filename = "untitled") {
     const tempCtx = tempCanvas.getContext("2d");
 
     if (!transparent) {
-      tempCtx.fillStyle = canvas.style.backgroundColor;
+      tempCtx.fillStyle = canvas.style.backgroundColor || "#ffffff";
       tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
     }
 
     tempCtx.drawImage(canvas, 0, 0);
-    gif.addFrame(tempCanvas, { delay: WIGGLE_INTERVAL });
-    frameCount++;
-
-    requestAnimationFrame(captureFrame);
+    gif.addFrame(tempCanvas, { delay: delay, copy: true });
   }
 
   return new Promise((resolve) => {
@@ -611,11 +612,12 @@ async function exportAsGIF(transparent = false, filename = "untitled") {
       link.href = URL.createObjectURL(blob);
       link.download = `${filename}.gif`;
       link.click();
-      wiggleFrame = savedWiggleFrame;
+
+      isWiggly = originalWigglyState;
       resolve();
     });
 
-    captureFrame();
+    gif.render();
   });
 }
 // ============================================================================
