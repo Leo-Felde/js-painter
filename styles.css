@@ -132,7 +132,6 @@ input[type="checkbox"] {
   background-color: var(--color-background);
   border-bottom: 0px;
   background-color: #e5e5f7;
-  opacity: 0.8;
   background-size: 5px 5px;
 }
 
@@ -378,6 +377,19 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 700px) {
+  #buttons-wrapper {
+    border: 2px solid var(--color-foreground);
+  }
+  #bottom-section {
+    border: 2px solid var(--color-foreground) !important;
+    border-top: 0px;
+  }
+
+  .width-group,
+  #header-section {
+    border: none !important;
+  }
+
   #export-btn {
     right: 14px;
     bottom: -50px !important;
@@ -393,7 +405,7 @@ input[type="checkbox"] {
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   #bottom-section {
@@ -451,7 +463,6 @@ input[type="checkbox"] {
   #buttons-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 12px;
   }
 
   .button-group {
@@ -1017,10 +1028,6 @@ input[type="checkbox"] {
 #export-btn #secondary {
   fill: var(--color-primary);
 }
-
-/* ============================================================================
-   MENU BAR STYLING
-   ============================================================================ */
 
 #menu-bar {
   grid-column: 2;
